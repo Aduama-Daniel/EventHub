@@ -5,9 +5,16 @@ import { CalendarIcon, ClockIcon, MapPinIcon } from "lucide-react"
 interface EventCardProps {
   event: Event | UIEvent
   isApiEvent?: boolean
+  hideDetailsButton?: boolean
+  additionalActions?: React.ReactNode
 }
 
-const EventCard: React.FC<EventCardProps> = ({ event, isApiEvent = false }) => {
+const EventCard: React.FC<EventCardProps> = ({ 
+  event, 
+  isApiEvent = false, 
+  hideDetailsButton = false,
+  additionalActions 
+}) => {
   const id = isApiEvent ? (event as Event)._id : (event as UIEvent).id
 
   // Generate a pseudorandom background color based on event name
@@ -27,7 +34,7 @@ const EventCard: React.FC<EventCardProps> = ({ event, isApiEvent = false }) => {
   const bgColorClass = getBackgroundColor(event.name)
 
   return (
-    <div className="bg-white dark:bg-gray-900 rounded-lg shadow-lg overflow-hidden transition-all duration-300 hover:shadow-xl">
+    <div className="bg-white dark:bg-gray-900 rounded-lg shadow-lg overflow-hidden transition-all duration-300 hover:shadow-xl relative">
       <div className={`h-48 ${bgColorClass} relative flex flex-col items-center justify-center`}>
         <div className="z-10 flex flex-col items-center">
           <span className="text-4xl font-bold text-gray-600 dark:text-gray-300 mb-2">
@@ -59,14 +66,23 @@ const EventCard: React.FC<EventCardProps> = ({ event, isApiEvent = false }) => {
             <span className="line-clamp-1">{event.location}</span>
           </div>
         </div>
-        <div className="mt-6">
-          <Link
-            href={`/events/${id}`}
-            className="inline-block w-full text-center bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition-colors duration-300"
-          >
-            Details
-          </Link>
-        </div>
+        {(additionalActions || !hideDetailsButton) && (
+          <div className={`mt-6 ${additionalActions ? 'flex justify-between items-center' : ''}`}>
+            {!hideDetailsButton && (
+              <Link
+                href={`/events/${id}`}
+                className="inline-block w-full text-center bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition-colors duration-300"
+              >
+                Details
+              </Link>
+            )}
+            {additionalActions && (
+              <div className="flex space-x-2">
+                {additionalActions}
+              </div>
+            )}
+          </div>
+        )}
       </div>
     </div>
   )
