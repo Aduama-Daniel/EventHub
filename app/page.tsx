@@ -17,7 +17,7 @@ export default function Home() {
     const loadEvents = async () => {
       try {
         setIsLoading(true)
-        const { events: apiEvents } = await fetchEvents(1, 3) // Fetch 3 featured events
+        const { events: apiEvents } = await fetchEvents(1, 3) 
         // Convert API events to UI events
         const uiEvents = apiEvents.map(event => ({
           id: event._id,
@@ -26,7 +26,7 @@ export default function Home() {
           time: event.time,
           location: event.location,
           description: event.description,
-          image: event.image
+         
         }))
         setEvents(uiEvents)
       } catch (err) {

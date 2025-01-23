@@ -1,63 +1,72 @@
-import { Event, UIEvent } from "@/lib/api"
+import type { Event, UIEvent } from "@/lib/api"
 import Link from "next/link"
-import Image from "next/image"
+import { CalendarIcon, ClockIcon, MapPinIcon } from "lucide-react"
 
 interface EventCardProps {
   event: Event | UIEvent
   isApiEvent?: boolean
 }
 
-const bufferToBase64 = (buffer: Buffer) => {
-  if (!buffer) return '';
-  // Check if buffer is already a base64 string
-  if (typeof buffer === 'string') return buffer;
-  // Handle Buffer object
-  try {
-    return Buffer.from(buffer).toString('base64');
-  } catch (error) {
-    console.error('Error converting buffer to base64:', error);
-    return '';
-  }
-}
-
 const EventCard: React.FC<EventCardProps> = ({ event, isApiEvent = false }) => {
   const id = isApiEvent ? (event as Event)._id : (event as UIEvent).id
-  
-  console.log('Event image data:', event.image); // Debug log
-  
-  // Create image source from buffer data if available
-  let imageSource = '/placeholder.svg';
-  if (event.image?.data) {
-    try {
-      const base64String = bufferToBase64(event.image.data);
-      imageSource = `data:${event.image.contentType};base64,${base64String}`;
-      console.log('Generated image source:', imageSource.substring(0, 50) + '...'); // Debug log
-    } catch (error) {
-      console.error('Error creating image source:', error);
-    }
+
+  // Generate a pseudorandom background color based on event name
+  const getBackgroundColor = (name: string) => {
+    const colors = [
+      'bg-gradient-to-br from-blue-100 to-blue-200 dark:from-blue-900/30 dark:to-blue-800/30',
+      'bg-gradient-to-br from-purple-100 to-purple-200 dark:from-purple-900/30 dark:to-purple-800/30',
+      'bg-gradient-to-br from-green-100 to-green-200 dark:from-green-900/30 dark:to-green-800/30',
+      'bg-gradient-to-br from-orange-100 to-orange-200 dark:from-orange-900/30 dark:to-orange-800/30',
+      'bg-gradient-to-br from-pink-100 to-pink-200 dark:from-pink-900/30 dark:to-pink-800/30'
+    ]
+    const index = name.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0) % colors.length
+    return colors[index]
   }
-  
+
+  const firstLetter = event.name.charAt(0).toUpperCase()
+  const bgColorClass = getBackgroundColor(event.name)
+
   return (
-    <div className="bg-white shadow-md rounded-lg overflow-hidden">
-      <div className="relative w-full h-48">
-        <Image 
-          src={imageSource}
-          alt={event.name}
-          fill
-          className="object-cover"
-          unoptimized={imageSource.startsWith('data:')} // Add this for base64 images
-        />
+    <div className="bg-white dark:bg-gray-900 rounded-lg shadow-lg overflow-hidden transition-all duration-300 hover:shadow-xl">
+      <div className={`h-48 ${bgColorClass} relative flex flex-col items-center justify-center`}>
+        <div className="z-10 flex flex-col items-center">
+          <span className="text-4xl font-bold text-gray-600 dark:text-gray-300 mb-2">
+            {firstLetter}
+          </span>
+          <span className="text-sm text-gray-500 dark:text-gray-400 text-center px-4">
+            {event.name}
+          </span>
+        </div>
       </div>
-      <div className="p-4">
-        <h2 className="text-xl font-bold">{event.name}</h2>
-        <p className="text-gray-600">{event.description.substring(0, 100)}...</p>
-        <p className="text-sm text-gray-500 mt-2">
-          {new Date(event.date).toLocaleDateString()} at {event.time}
+      <div className="p-6">
+        <h3 className="text-xl font-semibold mb-2 text-gray-800 dark:text-white">{event.name}</h3>
+        <p className="text-gray-600 dark:text-gray-300 mb-4">
+          {event.description.length > 100 
+            ? `${event.description.substring(0, 100)}...`
+            : event.description}
         </p>
-        <p className="text-sm text-gray-500">{event.location}</p>
-        <Link href={`/events/${id}`} className="block mt-2 text-blue-500 hover:underline">
-          Learn More
-        </Link>
+        <div className="space-y-2">
+          <div className="flex items-center text-gray-500 dark:text-gray-400">
+            <CalendarIcon className="w-5 h-5 mr-2 flex-shrink-0" />
+            <span>{new Date(event.date).toLocaleDateString()}</span>
+          </div>
+          <div className="flex items-center text-gray-500 dark:text-gray-400">
+            <ClockIcon className="w-5 h-5 mr-2 flex-shrink-0" />
+            <span>{event.time}</span>
+          </div>
+          <div className="flex items-center text-gray-500 dark:text-gray-400">
+            <MapPinIcon className="w-5 h-5 mr-2 flex-shrink-0" />
+            <span className="line-clamp-1">{event.location}</span>
+          </div>
+        </div>
+        <div className="mt-6">
+          <Link
+            href={`/events/${id}`}
+            className="inline-block w-full text-center bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition-colors duration-300"
+          >
+            Details
+          </Link>
+        </div>
       </div>
     </div>
   )

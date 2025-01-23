@@ -18,8 +18,8 @@ export function HeroSection() {
             </div>
             <div className="flex flex-col gap-2 min-[400px]:flex-row">
               <Button asChild size="lg" className="bg-primary">
-                <Link href="/dashboard/new">
-                  Start Organizing
+                <Link href="/dashboard/create">
+                  Create Event
                   <Calendar className="ml-2 h-4 w-4" />
                 </Link>
               </Button>

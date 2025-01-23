@@ -44,7 +44,6 @@ export default function OrganizerDashboard() {
     }
   }
 
-  // Rest of your component remains the same...
   if (isLoading) {
     return (
       <div className="flex justify-center items-center h-screen">

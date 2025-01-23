@@ -4,7 +4,6 @@ import Link from "next/link"
 import { ArrowLeft, Share2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardFooter } from "@/components/ui/card"
-import Image from "next/image"
 
 interface Event {
   id: string
@@ -13,11 +12,6 @@ interface Event {
   time: string
   location: string
   description: string
-  imageUrl: string
-  image?: {
-    data: Buffer
-    contentType: string
-  }
 }
 
 interface EventDetailsProps {
@@ -36,14 +30,10 @@ export default function EventDetails({ event }: EventDetailsProps) {
       <Card>
         <CardContent className="p-6">
           <div className="grid gap-6 md:grid-cols-2">
-            <div className="aspect-video relative overflow-hidden rounded-lg">
-              <Image 
-                src={event.imageUrl}
-                alt={event.name}
-                fill
-                className="object-cover"
-                unoptimized={event.imageUrl.startsWith('data:')}
-              />
+            <div className="aspect-video bg-gray-100 rounded-lg flex items-center justify-center">
+              <span className="text-4xl font-bold text-gray-400">
+                {event.name.charAt(0).toUpperCase()}
+              </span>
             </div>
             <div className="space-y-4">
               <h1 className="text-3xl font-bold">{event.name}</h1>
